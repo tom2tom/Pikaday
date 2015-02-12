@@ -239,6 +239,8 @@
 
         // internationalization
         i18n: {
+            Year          : 'Year',
+            Month         : 'Month',
             previousMonth : 'Previous Month',
             nextMonth     : 'Next Month',
             months        : ['January','February','March','April','May','June','July','August','September','October','November','December'],
@@ -324,7 +326,7 @@
             opts = instance._o,
             isMinYear = year === opts.minYear,
             isMaxYear = year === opts.maxYear,
-            html = '<div class="pika-title">',
+            html = '<div class="pika-title"><div class="pika-label">',
             monthHtml,
             yearHtml,
             prev = true,
@@ -336,7 +338,7 @@
                 ((isMinYear && i < opts.minMonth) || (isMaxYear && i > opts.maxMonth) ? 'disabled' : '') + '>' +
                 opts.i18n.months[i] + '</option>');
         }
-        monthHtml = '<div class="pika-label">' + opts.i18n.months[month] + '<select class="pika-select pika-select-month">' + arr.join('') + '</select></div>';
+        monthHtml = opts.i18n.Month + ' <select class="pika-select pika-select-month">' + arr.join('') + '</select>';
 
         if (isArray(opts.yearRange)) {
             i = opts.yearRange[0];
@@ -351,13 +353,14 @@
                 arr.push('<option value="' + i + '"' + (i === year ? ' selected': '') + '>' + (i) + '</option>');
             }
         }
-        yearHtml = '<div class="pika-label">' + year + opts.yearSuffix + '<select class="pika-select pika-select-year">' + arr.join('') + '</select></div>';
+        yearHtml = opts.i18n.Year + opts.yearSuffix + ' <select class="pika-select pika-select-year">' + arr.join('') + '</select>';
 
         if (opts.showMonthAfterYear) {
-            html += yearHtml + monthHtml;
+            html += yearHtml + '&nbsp;&nbsp;' + monthHtml;
         } else {
-            html += monthHtml + yearHtml;
+            html += monthHtml + '&nbsp;&nbsp;' + yearHtml;
         }
+        html += '</div>'
 
         if (isMinYear && (month === 0 || opts.minMonth >= month)) {
             prev = false;
@@ -846,7 +849,7 @@
             }
 
             for (var c = 0; c < opts.numberOfMonths; c++) {
-                html += '<div class="pika-lendar">' + renderTitle(this, c, this.calendars[c].year, this.calendars[c].month, this.calendars[0].year) + this.render(this.calendars[c].year, this.calendars[c].month) + '</div>';
+                html += '<div class="pika-calendar">' + renderTitle(this, c, this.calendars[c].year, this.calendars[c].month, this.calendars[0].year) + this.render(this.calendars[c].year, this.calendars[c].month) + '</div>';
             }
 
             this.el.innerHTML = html;
