@@ -239,8 +239,6 @@
 
         // internationalization
         i18n: {
-            Year          : 'Year',
-            Month         : 'Month',
             previousMonth : 'Previous Month',
             nextMonth     : 'Next Month',
             months        : ['January','February','March','April','May','June','July','August','September','October','November','December'],
@@ -322,7 +320,7 @@
 
     renderTitle = function(instance, c, year, month, refYear)
     {
-        var i, j, arr,
+        var i, j, arr, txt,
             opts = instance._o,
             isMinYear = year === opts.minYear,
             isMaxYear = year === opts.maxYear,
@@ -338,7 +336,7 @@
                 ((isMinYear && i < opts.minMonth) || (isMaxYear && i > opts.maxMonth) ? 'disabled' : '') + '>' +
                 opts.i18n.months[i] + '</option>');
         }
-        monthHtml = '<div class="pika-label">' + opts.i18n.Month + ' <select class="pika-select pika-select-month">' + arr.join('') + '</select></div>';
+        monthHtml = '<div class="pika-label"><select class="pika-select pika-select-month">' + arr.join('') + '</select></div>';
 
         if (isArray(opts.yearRange)) {
             i = opts.yearRange[0];
@@ -353,7 +351,7 @@
                 arr.push('<option value="' + i + '"' + (i === year ? ' selected': '') + '>' + (i) + '</option>');
             }
         }
-        yearHtml = '<div class="pika-label">' + opts.i18n.Year + opts.yearSuffix + ' <select class="pika-select pika-select-year">' + arr.join('') + '</select></div>';
+        yearHtml = '<div class="pika-label"><select class="pika-select pika-select-year">' + arr.join('') + '</select></div>';
 
         if (opts.showMonthAfterYear) {
             html += yearHtml + monthHtml;
@@ -370,10 +368,12 @@
         }
 
         if (c === 0) {
-            html += '<button class="pika-prev' + (prev ? '' : ' is-disabled') + '" type="button">' + opts.i18n.previousMonth + '</button>';
+			txt = opts.i18n.previousMonth;
+            html += '<button class="pika-prev' + (prev ? '' : ' is-disabled') + '" type="button" title="' + txt + '">' + txt + '</button>';
         }
         if (c === (instance._o.numberOfMonths - 1) ) {
-            html += '<button class="pika-next' + (next ? '' : ' is-disabled') + '" type="button">' + opts.i18n.nextMonth + '</button>';
+			txt = opts.i18n.nextMonth;
+            html += '<button class="pika-next' + (next ? '' : ' is-disabled') + '" type="button" title="' + txt + '">' + txt + '</button>';
         }
 
         return html += '</div>';

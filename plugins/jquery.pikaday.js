@@ -64,8 +64,6 @@ defaultDate: null
  container: undefined
 // internationalization
  i18n: {
-  Year          : 'Year',
-  Month         : 'Month',
   previousMonth : 'Previous Month',
   nextMonth     : 'Next Month',
   months        : ['January','February','March','April','May','June','July','August','September','October','November','December'],
