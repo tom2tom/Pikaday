@@ -160,7 +160,8 @@
         return to;
     },
 
-    adjustCalendar = function(calendar) {
+    adjustCalendar = function(calendar)
+    {
         if (calendar.month < 0) {
             calendar.year -= Math.ceil(Math.abs(calendar.month)/12);
             calendar.month += 12;
@@ -253,7 +254,6 @@
         onDraw: null
     },
 
-
     /**
      * templating functions to abstract HTML rendering
      */
@@ -289,7 +289,8 @@
                '</td>';
     },
 
-    renderWeek = function (d, m, y) {
+    renderWeek = function (d, m, y)
+    {
         // Lifted from http://javascript.about.com/library/blweekyear.htm, lightly modified.
         var onejan = new Date(y, 0, 1),
             weekNum = Math.ceil((((new Date(y, m, d) - onejan) / 86400000) + onejan.getDay()+1)/7);
@@ -406,7 +407,7 @@
 
             if (!hasClass(target, 'is-disabled')) {
                 if (hasClass(target, 'pika-button') && !hasClass(target, 'is-empty')) {
-                    self.setDate(new Date(target.getAttribute('data-pika-year'), target.getAttribute('data-pika-month'), target.getAttribute('data-pika-day')));
+                    self.setDay(new Date(target.getAttribute('data-pika-year'), target.getAttribute('data-pika-month'), target.getAttribute('data-pika-day')),false);
                     if (opts.bound) {
                         sto(function() {
                             self.hide();
@@ -574,12 +575,10 @@
         }
     };
 
-
     /**
      * public Pikaday API
      */
     Pikaday.prototype = {
-
 
         /**
          * configure functionality
@@ -706,9 +705,10 @@
                 date = max;
             }
 
+            var td = new Date(date.getTime());
+            setToStartOfDay(td);
+            this.gotoDate(td);
             this._d = new Date(date.getTime());
-            setToStartOfDay(this._d);
-            this.gotoDate(this._d);
 
             if (this._o.field) {
                 this._o.field.value = this.toString();
@@ -717,6 +717,18 @@
             if (!preventOnSelect && typeof this._o.onSelect === 'function') {
                 this._o.onSelect.call(this, this.getDate());
             }
+        },
+
+        /**
+         * set the current selected day, preserving any time component
+         */
+        setDay: function(date, preventOnSelect)
+        {
+          if (this._d) {
+              var ms = date.getTime() - this._d.getTimezoneOffset()*60000 + this._d.getTime()%86400000;
+              date.setTime(ms);
+          }
+          this.setDate(date,preventOnSelect);
         },
 
         /**
@@ -753,7 +765,8 @@
             this.adjustCalendars();
         },
 
-        adjustCalendars: function() {
+        adjustCalendars: function()
+        {
             this.calendars[0] = adjustCalendar(this.calendars[0]);
             for (var c = 1; c < this._o.numberOfMonths; c++) {
                 this.calendars[c] = adjustCalendar({
