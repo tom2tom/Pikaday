@@ -100,7 +100,7 @@ popup dialog and whose style may be customised are:
  pika-week
  */
 
-(function($) {
+(function($) { "$:nomunge";
  $.extend({
   Pikaday: new function () {
    this.construct = function (options) {
