@@ -25,7 +25,7 @@ $(document).ready(function() {
 
 <script src="pikaday.js"></script>
 <script>
- var picker = new Pikaday({ field: $('#pickdate')[0] }); 
+ var picker = new Pikaday({ field: $('#pickdate')[0] });
 </script>
 
 Options and their default values:
@@ -105,9 +105,8 @@ popup dialog and whose style may be customised are:
   Pikaday: new function () {
    this.construct = function (options) {
     this.each (function () {
-     var cfg = { field: this };
-     $.extend (cfg, options || {});
-     var ob = new Pikaday(cfg);
+     var cfg = $.extend (options || {}, {trigger: this});
+     $(this).data('pikaday', new Pikaday(cfg));
     });
     return this;
    };
