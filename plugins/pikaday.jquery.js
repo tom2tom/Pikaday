@@ -1,11 +1,10 @@
 /*!
- * Pikaday jQuery plugin.
- *
- * Copyright © 2013 David Bushell | BSD & MIT license | https://github.com/dbushell/Pikaday
- */
+* Pikaday jQuery plugin.
+* Copyright © 2013 David Bushell | BSD & MIT license | https://github.com/dbushell/Pikaday
+*/
 
 (function (root, factory)
-{
+{ "don't munge usestrict";
     'use strict';
 
     if (typeof exports === 'object') {
@@ -19,7 +18,7 @@
         factory(root.jQuery, root.Pikaday);
     }
 }(this, function ($, Pikaday)
-{
+{ "don't munge usestrict";
     'use strict';
 
     $.fn.pikaday = function()
