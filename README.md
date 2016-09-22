@@ -38,8 +38,7 @@ If you're using **jQuery** make sure to pass only the first element:
 var picker = new Pikaday({ field: $('#datepicker')[0] });
 ```
 
-If the Pikaday instance is not bound to a field you can append the element anywhere:
-
+If the Pikaday instance is not bound to a text-capable field, you must specify such a field, for cacheing the calendar value, at least:
 ```javascript
 var field = document.getElementById('datepicker');
 var picker = new Pikaday({
@@ -50,8 +49,7 @@ var picker = new Pikaday({
 field.parentNode.insertBefore(picker.el, field.nextSibling);
 ```
 
-For advanced formatting load [Moment.js][moment] prior to Pikaday:  
-See the [moment.js example][] for a full version.
+[Moment.js][moment] (among others) may be used as an ancillary for formatting dates/times. See the [moment.js example][] for a full version.
 
 ```html
 <input type="text" id="datepicker" value="9 Oct 2014">
@@ -62,8 +60,8 @@ See the [moment.js example][] for a full version.
     var picker = new Pikaday({
         field: document.getElementById('datepicker'),
         format: 'D MMM YYYY',
-        onSelect: function() {
-            console.log(this.getMoment().format('Do MMMM YYYY'));
+        onSelect: function(date) {
+            console.log(moment(date).format('Do MMMM YYYY'));
         }
     });
 </script>
@@ -96,10 +94,36 @@ Pikaday has many useful options:
 * `showMonthAfterYear` render the month after year in the title (default `false`)
 * `numberOfMonths` number of visible calendars
 * `mainCalendar` when `numberOfMonths` is used, this will help you to choose where the main calendar will be (default `left`, can be set to `right`). Only used for the first display or when a selected date is not already visible
-* `onSelect` callback function for when a date is selected
-* `onOpen` callback function for when the picker becomes visible
-* `onClose` callback function for when the picker is hidden
-* `onDraw` callback function for when the picker draws a new month
+* `getdate` helper function like
+```javascript
+function(target,fmtstring)
+```
+for constructing a Date object according to `fmtstring`. Something that works like ```moment(target,fmtstring).toDate()``` using the [Moment.js][moment] library. `target` may be a string or Date object. (default `null`)
+* `reformat` helper function like
+```javascript
+function(target,fmtstring)
+```
+for getting a formatted string representing `target`, which may be a string or Date object. Something that works like ```moment(target).format(fmtstring)``` in the [Moment.js][moment] library. (default `null`)
+* `onSelect` callback function like
+```javascript
+function(Date object)
+```
+to be called when a date is selected (default `null`)
+* `onOpen` callback function like
+```javascript
+function()
+```
+to be called when the picker becomes visible (default `null`)
+* `onClose` callback function like
+```javascript
+function()
+```
+to be called when the picker is hidden (default `null`)
+* `onDraw` callback function
+```javascript
+function()
+```
+to be called when the picker draws a new month (default `null`)
 
 ## jQuery Plugin
 
