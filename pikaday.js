@@ -2,7 +2,7 @@
  * Pikaday
  * Copyright © 2014 David Bushell | BSD & MIT license | https://github.com/dbushell/Pikaday
  */
-(function(root, factory) { "don't munge usestrict";
+(function(root, factory) { "nomunge:usestrict";
     'use strict';
 
     var moment;
@@ -56,17 +56,17 @@
         },
 
         fireEvent = function(el, eventName, data) {
-            var ev;
+            var e;
 
             if (document.createEvent) {
-                ev = document.createEvent('HTMLEvents');
-                ev.initEvent(eventName, true, false);
-                ev = extend(ev, data);
-                el.dispatchEvent(ev);
+                e = document.createEvent('HTMLEvents');
+                e.initEvent(eventName, true, false);
+                e = extend(e, data);
+                el.dispatchEvent(e);
             } else if (document.createEventObject) {
-                ev = document.createEventObject();
-                ev = extend(ev, data);
-                el.fireEvent('on' + eventName, ev);
+                e = document.createEventObject();
+                e = extend(e, data);
+                el.fireEvent('on' + eventName, e);
             }
         },
 
@@ -154,6 +154,15 @@
             return calendar;
         },
 
+        momentGet = function(target,fmt) {
+            var str = moment(target,fmt);
+            return (str && str.isValid()) ? str.toDate() : null;
+        },
+
+        momentFormat = function(target,fmt) {
+            return moment(target).format(fmt);
+        },
+
         /**
          * defaults and localisation
          */
@@ -227,6 +236,9 @@
                 weekdaysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
             },
 
+            // date-processor functions
+            getdate: null,
+            reformat: null,
             // callback functions
             onSelect: null,
             onOpen: null,
@@ -423,9 +435,8 @@
                 if (e.firedBy === self) {
                     return;
                 }
-                if (hasMoment) {
-                    date = moment(opts.field.value, opts.format);
-                    date = (date && date.isValid()) ? date.toDate() : null;
+                if (typeof opts.getdate === 'function') {
+                    date = opts.getdate.call(this,opts.field.value,opts.format);
                 } else {
                     date = new Date(Date.parse(opts.field.value));
                 }
@@ -501,13 +512,13 @@
                 }
                 addEvent(opts.field, 'change', self._onInputChange);
 
-                if (!opts.defaultDate) {
-                    if (hasMoment && opts.field.value) {
-                        opts.defaultDate = moment(opts.field.value, opts.format).toDate();
+                if (!opts.defaultDate && opts.field.value) {
+                    if (typeof opts.getdate === 'function') {
+                        opts.defaultDate = opts.getdate.call(this,opts.field.value,opts.format);
                     } else {
                         opts.defaultDate = new Date(Date.parse(opts.field.value));
                     }
-                    opts.setDefaultDate = true;
+                    opts.setDefaultDate = opts.defaultDate == true;
                 }
             }
 
@@ -595,36 +606,41 @@
                 }
             }
 
+            if (!opts.getdate && hasMoment) {
+                opts.getdate = momentGet;
+            }
+            if (!opts.reformat && hasMoment) {
+                opts.reformat = momentFormat;
+            }
+
             return opts;
         },
 
         /**
-         * return a formatted string of the current selection (using Moment.js if available)
+         * return a formatted string of the current selection (using ancillary formatter if available)
          */
         toString: function(format) {
-            if (hasMoment) {
-                return moment(this._d).format(format || this._o.format);
-            }
-            if (isDate(this._d)) {
-                return this._d.toDateString();
+            if (this._d && isDate(this._d)) {
+                if (typeof this._o.reformat === 'function') {
+                    return this._o.reformat.call(this,this._d,format || this._o.format);
+                } else {
+                    return this._d.toDateString();
+                }
             }
             return '';
         },
 
         /**
-         * return a Moment.js object of the current selection (if available)
+         * DEPRECATED return a Moment.js object of the current selection (if available)
          */
         getMoment: function() {
-            return hasMoment ? moment(this._d) : null;
+            return null;
         },
 
         /**
-         * set the current selection from a Moment.js object (if available)
+         * DEPRECATED set the current selection from a Moment.js object (if available)
          */
         setMoment: function(date, preventOnSelect) {
-            if (hasMoment && moment.isMoment(date)) {
-                this.setDate(date.toDate(), preventOnSelect);
-            }
         },
 
         /**
@@ -667,44 +683,26 @@
                 date = max;
             }
 
-            var ms = date.getTime(),
-                td = new Date(ms);
+            var td = new Date(date.getTime());
             setToStartOfDay(td);
             this.gotoDate(td);
 
-            if (this._o.format.match(/((H *:)|(: *[MS]))/i)) { //preserve time if wanted and possible
-                var stored = this._o.trigger.value;
-                if (hasMoment) {
-                    var mob = moment(stored);
-                    if (mob.isValid()) {
-                        var stime = mob.get('hour') * 3600 + mob.get('minute') * 60;
-                        td.setTime(td.getTime() + stime * 1000);
-                    }
-                } else {
-                    var parts = stored.match(/([01]?\d|2[0-3]) *: *([0-5]?\d) *$/);
-                    if (parts) {
-                        var stime = parseInt(parts[1], 10) * 3600 + parseInt(parts[2], 10) * 60;
-                        td.setTime(td.getTime() + stime * 1000);
+            //preserve recorded time, if any
+            var ov = this._o.field.value;
+            if (ov) {
+                var od = new Date(ov);
+                if (isDate(od)) {
+                    var ot = od.getTime();
+                    setToStartOfDay(od);
+                    var mstime = ot - od.getTime();
+                    if (mstime) {
+                        td.setTime(td.getTime() + mstime);
                     }
                 }
             }
-
             this._d = td;
-            switch (this._o.trigger.tagName) {
-                case 'INPUT':
-                   switch (this._o.trigger.type) {
-                       case 'text':
-                       case 'radio':
-                           this._o.trigger.value = this.toString();
-                           break;
-                  }
-               break;
-               case 'TEXTAREA':
-               case 'SELECT':
-                   this._o.trigger.value = this.toString();
-                   break;
-            }
 
+            this._o.field.value = this.toString();
             fireEvent(this._o.field, 'change', {
                 firedBy: this
             });
