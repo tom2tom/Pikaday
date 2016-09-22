@@ -4,7 +4,7 @@
 */
 
 (function (root, factory)
-{ "don't munge usestrict";
+{ "usestrict:nomunge";
     'use strict';
 
     if (typeof exports === 'object') {
@@ -18,7 +18,7 @@
         factory(root.jQuery, root.Pikaday);
     }
 }(this, function ($, Pikaday)
-{ "don't munge usestrict";
+{ "$:nomunge,Pikaday:nomunge";
     'use strict';
 
     $.fn.pikaday = function()
@@ -37,7 +37,12 @@
             if (!(plugin instanceof Pikaday)) {
                 if (typeof args[0] === 'object') {
                     var options = $.extend({}, args[0]);
-                    options.field = self[0];
+                    if (!('field' in options)) {
+                        options.field = self[0];
+                    }
+                    if (!('trigger' in options)) {
+                        options.trigger = self[0];
+                    }
                     self.data('pikaday', new Pikaday(options));
                 }
             } else {
