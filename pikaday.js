@@ -659,9 +659,11 @@
 
                 if (this._o.field) {
                     this._o.field.value = '';
-                    fireEvent(this._o.field, 'change', {
-                        firedBy: this
-                    });
+                    if (this._o.field != this._o.trigger) {
+                        fireEvent(this._o.field, 'change', {
+                            firedBy: this
+                        });
+                    }
                 }
 
                 this.draw();
@@ -690,7 +692,12 @@
             //preserve recorded time, if any
             var ov = this._o.field.value;
             if (ov) {
-                var od = new Date(ov);
+                var od;
+                if (typeof this._o.getdate === 'function') {
+                    od = this._o.getdate.call(this,ov,this._o.format);
+                } else {
+                    od = new Date(Date.parse(ov));
+                }
                 if (isDate(od)) {
                     var ot = od.getTime();
                     setToStartOfDay(od);
@@ -703,9 +710,11 @@
             this._d = td;
 
             this._o.field.value = this.toString();
-            fireEvent(this._o.field, 'change', {
-                firedBy: this
-            });
+            if (this._o.field != this._o.trigger) {
+                fireEvent(this._o.field, 'change', {
+                    firedBy: this
+                });
+            }
 
             if (!preventOnSelect && typeof this._o.onSelect === 'function') {
                 this._o.onSelect.call(this, this.getDate());
