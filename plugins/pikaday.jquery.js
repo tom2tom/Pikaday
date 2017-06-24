@@ -18,7 +18,7 @@
         factory(root.jQuery, root.Pikaday);
     }
 }(this, function ($, Pikaday)
-{ "$:nomunge,Pikaday:nomunge";
+{ "$:nomunge,Pikaday:nomunge,usestrict:nomunge";
     'use strict';
 
     $.fn.pikaday = function()
