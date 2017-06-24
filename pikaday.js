@@ -26,7 +26,7 @@
     } else {
         root.Pikaday = factory(root.moment);
     }
-}(this, function(moment) { "defaults:nomunge, opts:nomunge, Pikaday:nomunge";
+}(this, function(moment) { "defaults:nomunge, opts:nomunge, Pikaday:nomunge, nomunge:usestrict";
     'use strict';
     /**
      * feature detection and helper functions
@@ -114,8 +114,8 @@
             if (isDate(date)) date.setHours(0, 0, 0, 0);
         },
 
+        // to ensure correct result, derive a,b from setToStartOfDay()
         compareDates = function(a, b) {
-            // weak date comparison (use setToStartOfDay(date) to ensure correct result)
             return a.getTime() === b.getTime();
         },
 
@@ -355,11 +355,11 @@
 
             if (c === 0) {
                 txt = opts.i18n.previousMonth;
-                html += '<button class="pika-prev' + (prev ? '' : ' is-disabled') + '" type="button" title="' + txt + '">' + txt + '</button>';
+                html += '<button class="pika-prev' + (prev ? '' : ' is-disabled') + '" title="' + txt + '">' + txt + '</button>';
             }
             if (c === (instance._o.numberOfMonths - 1)) {
                 txt = opts.i18n.nextMonth;
-                html += '<button class="pika-next' + (next ? '' : ' is-disabled') + '" type="button" title="' + txt + '">' + txt + '</button>';
+                html += '<button class="pika-next' + (next ? '' : ' is-disabled') + '" title="' + txt + '">' + txt + '</button>';
             }
 
             return html += '</div>';
