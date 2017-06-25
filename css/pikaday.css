@@ -217,7 +217,8 @@ table.table_sort table.pika-table th, .pika-table th {
     background: #f5f5f5;
 }
 
-.pika-text-button {
+/* override pika-button for text-label */
+.pika-text {
     text-align: left;
 }
 
