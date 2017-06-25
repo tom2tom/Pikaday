@@ -261,7 +261,8 @@
             if (isEmpty) {
                 return '<td class="is-empty"></td>';
             }
-            var arr = [];
+            var arr = [],
+                cls;
             if (isDisabled) {
                 arr.push('is-disabled');
             }
@@ -271,8 +272,9 @@
             if (isSelected) {
                 arr.push('is-selected');
             }
-            return '<td data-day="' + d + '" class="' + arr.join(' ') + '">' +
-                '<button class="pika-button pika-day" type="button" ' +
+            cls = (arr.length > 0) ? ' class="' + arr.join(' ') + '"' : ''; 
+            return '<td data-day="' + d + '"' + cls + '>' +
+                '<button class="pika-button pika-day" ' +
                 'data-pika-year="' + y + '" data-pika-month="' + m + '" data-pika-day="' + d + '">' +
                 d +
                 '</button>' +
@@ -558,7 +560,9 @@
                 this._o = extend({}, defaults, true);
             }
 
-            var opts = extend(this._o, options, true);
+            var subopts = extend(this._o.i18n, options.i18n, true),
+                   opts = extend(this._o, options, true);
+            opts.i18n = subopts;
 
             opts.isRTL = !!opts.isRTL;
 
